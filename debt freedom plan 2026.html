@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>План финансовой свободы 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-light: #E8C96A; --gold-dim: #8B6914;
+    --bg: #0A0A08; --bg2: #111109; --bg3: #1A1A14; --bg4: #222218;
+    --ivory: #F5F0E8; --ivory-dim: #A89F8C;
+    --red: #C0392B; --red-dim: #7B1F16;
+    --green: #27AE60; --green-dim: #145A32;
+    --blue: #2980B9;
+    --border: rgba(201,168,76,0.18); --border-bright: rgba(201,168,76,0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body { background: var(--bg); color: var(--ivory); font-family: 'IBM Plex Mono', monospace; min-height: 100vh; padding-bottom: 60px; }
+
+  .header { background: linear-gradient(180deg,#0A0A08,#111109); border-bottom: 1px solid var(--border-bright); padding: 14px 16px; position: sticky; top: 0; z-index: 100; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 10px; }
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+  .stat-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 7px 8px; text-align: center; }
+  .stat-label { font-size: 0.58rem; color: var(--ivory-dim); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
+  .stat-value { font-size: 0.78rem; font-weight: 500; color: var(--gold); }
+  .stat-value.pos { color: var(--green); }
+  .stat-value.neg { color: var(--red); }
+
+  .progress-section { padding: 10px 16px; background: var(--bg2); border-bottom: 1px solid var(--border); }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.62rem; color: var(--ivory-dim); margin-bottom: 5px; }
+  .progress-track { height: 5px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,var(--gold-dim),var(--gold)); border-radius: 3px; transition: width 0.5s ease; }
+
+  /* DEPOSIT CARD */
+  .deposit-card { background: linear-gradient(135deg,#0A1628,#1A2A40); border: 1px solid rgba(41,128,185,0.4); border-radius: 10px; padding: 12px 14px; margin: 10px 16px; }
+  .deposit-title { font-family: 'Playfair Display', serif; font-size: 0.78rem; color: #64B5F6; margin-bottom: 8px; }
+  .deposit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .deposit-item .dl { font-size: 0.6rem; color: var(--ivory-dim); margin-bottom: 2px; }
+  .deposit-item .dv { font-size: 0.72rem; color: #64B5F6; font-weight: 500; }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg2); overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: 0 0 auto; padding: 9px 16px; font-size: 0.68rem; color: var(--ivory-dim); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* WEEKS */
+  .weeks-container { padding: 10px 14px; }
+  .phase-header { font-family: 'Playfair Display', serif; font-size: 0.72rem; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 0.14em; padding: 10px 0 5px; border-bottom: 1px solid var(--border); margin-bottom: 8px; margin-top: 6px; }
+
+  .week-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: border-color 0.2s; }
+  .week-card.current-week { border-color: var(--gold); box-shadow: 0 0 10px rgba(201,168,76,0.12); }
+
+  .week-header { display: flex; align-items: center; padding: 9px 11px; cursor: pointer; gap: 8px; }
+  .week-num { font-size: 0.58rem; color: var(--gold-dim); font-weight: 500; min-width: 26px; }
+  .week-dates { font-size: 0.68rem; color: var(--ivory); flex: 1; }
+  .week-balance { font-size: 0.75rem; font-weight: 500; text-align: right; }
+  .week-balance.ok { color: var(--green); }
+  .week-balance.warn { color: var(--gold); }
+  .week-balance.tight { color: #E67E22; }
+  .week-chevron { color: var(--ivory-dim); font-size: 0.6rem; transition: transform 0.2s; }
+  .week-card.open .week-chevron { transform: rotate(180deg); }
+
+  .week-body { display: none; padding: 0 11px 11px; border-top: 1px solid var(--border); }
+  .week-card.open .week-body { display: block; }
+
+  .section-title { font-size: 0.58rem; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 0.1em; margin: 9px 0 4px; }
+
+  .flow-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 4px 0; border-bottom: 1px solid rgba(201,168,76,0.07); font-size: 0.68rem; gap: 8px; }
+  .flow-row:last-child { border-bottom: none; }
+  .flow-label { color: var(--ivory-dim); flex: 1; line-height: 1.4; }
+  .flow-label em { color: var(--ivory); font-style: normal; }
+  .flow-label small { display: block; font-size: 0.58rem; color: var(--ivory-dim); opacity: 0.7; }
+  .flow-amount { font-weight: 500; white-space: nowrap; }
+  .income { color: var(--green); }
+  .expense { color: var(--red); }
+  .debtpay { color: #E67E22; }
+  .lombard { color: #9B59B6; }
+  .deposit-flow { color: #64B5F6; }
+
+  .balance-box { background: var(--bg4); border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; margin-top: 9px; display: flex; justify-content: space-between; align-items: center; }
+  .balance-box .lbl { font-size: 0.6rem; color: var(--ivory-dim); }
+  .balance-box .val { font-size: 0.82rem; font-weight: 500; color: var(--gold); }
+
+  .tip-box { background: rgba(201,168,76,0.06); border-left: 2px solid var(--gold-dim); border-radius: 0 6px 6px 0; padding: 7px 9px; margin-top: 9px; font-size: 0.65rem; color: var(--ivory-dim); line-height: 1.5; }
+  .tip-box strong { color: var(--gold); }
+  .alert-box { background: rgba(192,57,43,0.07); border-left: 2px solid var(--red); border-radius: 0 6px 6px 0; padding: 7px 9px; margin-top: 7px; font-size: 0.65rem; color: #FF9080; line-height: 1.5; }
+
+  .book-rec { background: var(--bg4); border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; margin-top: 7px; font-size: 0.63rem; }
+  .book-title { color: var(--gold); font-style: italic; }
+  .book-lesson { color: var(--ivory-dim); margin-top: 2px; line-height: 1.4; }
+
+  .tasks-section { margin-top: 8px; }
+  .check-row { display: flex; align-items: flex-start; gap: 7px; padding: 4px 0; font-size: 0.68rem; color: var(--ivory-dim); cursor: pointer; border-bottom: 1px solid rgba(201,168,76,0.05); line-height: 1.4; }
+  .check-row:last-child { border-bottom: none; }
+  .check-row input[type=checkbox] { accent-color: var(--gold); width: 13px; height: 13px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .check-row.done span { text-decoration: line-through; opacity: 0.45; }
+  .check-row .task-amount { color: var(--gold); font-weight: 500; white-space: nowrap; margin-left: auto; padding-left: 8px; }
+
+  /* DEPOSIT DEPOSIT DEPOSIT */
+  .deposit-inp-row { display: flex; align-items: center; gap: 7px; margin-top: 8px; padding: 7px 9px; background: rgba(41,128,185,0.08); border: 1px solid rgba(41,128,185,0.25); border-radius: 6px; }
+  .deposit-inp-label { font-size: 0.63rem; color: #64B5F6; flex: 1; }
+  .deposit-inp { background: rgba(41,128,185,0.15); border: 1px solid rgba(41,128,185,0.35); color: #90CAF9; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; width: 90px; padding: 4px 6px; border-radius: 4px; text-align: right; }
+  .deposit-btn { background: rgba(41,128,185,0.25); border: 1px solid rgba(41,128,185,0.5); color: #64B5F6; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+  .deposit-btn:hover { background: rgba(41,128,185,0.4); }
+  .deposit-btn.done { background: var(--green-dim); border-color: var(--green); color: #80FFB0; cursor: default; }
+
+  /* SUMMARY */
+  .summary-section { padding: 10px 14px; }
+  .summary-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+  .summary-card h3 { font-family: 'Playfair Display', serif; font-size: 0.82rem; color: var(--gold); margin-bottom: 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+  .debt-item { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.68rem; border-bottom: 1px solid rgba(201,168,76,0.05); }
+  .debt-item:last-child { border-bottom: none; }
+  .debt-name { color: var(--ivory-dim); }
+  .debt-total { color: var(--red); font-weight: 500; }
+
+  /* PRINCIPLES */
+  .principles { padding: 10px 14px; }
+  .principle-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 11px; margin-bottom: 7px; overflow: hidden; }
+  .principle-num { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold-dim); float: left; margin-right: 9px; line-height: 1; }
+  .principle-text { font-size: 0.67rem; color: var(--ivory-dim); line-height: 1.6; }
+  .principle-text strong { color: var(--ivory); }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div class="header-title" style="margin-bottom:0">◆ ПЛАН ФИНАНСОВОЙ СВОБОДЫ · 2026</div>
+    <button id="save-btn" onclick="saveToFile()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.4);color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:0.65rem;padding:5px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;letter-spacing:0.04em">💾 Сохранить</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-label">Долгов осталось</div>
+      <div class="stat-value neg" id="stat-debt">11 718 850 ₸</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Депозит 🪙</div>
+      <div class="stat-value pos" id="stat-deposit">97 776 ₸</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Погашено</div>
+      <div class="stat-value" id="stat-pct">0%</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">На руках</div>
+      <div class="stat-value" id="stat-balance">154 000 ₸</div>
+    </div>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-label">
+    <span>Прогресс погашения</span>
+    <span id="progress-pct2">0% из 11 718 850 ₸</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-bar" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="deposit-card">
+  <div class="deposit-title">🪙 Депозит «Маленький Гусь» · 20.01% ГЭСВ</div>
+  <div class="deposit-grid">
+    <div class="deposit-item"><div class="dl">Открыт / закрывается</div><div class="dv">22.05 → 22.08.2026</div></div>
+    <div class="deposit-item"><div class="dl">Вложено</div><div class="dv" id="dep-invested">97 776 ₸</div></div>
+    <div class="deposit-item"><div class="dl">Текущий баланс</div><div class="dv pos" id="dep-balance">97 776 ₸</div></div>
+    <div class="deposit-item"><div class="dl">К закрытию (~20.01%)</div><div class="dv" id="dep-forecast">≈ 113 600 ₸</div></div>
+  </div>
+  <div style="font-size:0.58rem;color:#4A8FBB;margin-top:7px;">★ Только пополнение, без снятий. При пролонгации — сумма + проценты реинвестируются.</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('plan')">📅 ПЛАН</div>
+  <div class="tab" onclick="switchTab('debts')">💳 ДОЛГИ</div>
+  <div class="tab" onclick="switchTab('principles')">📚 ПРИНЦИПЫ</div>
+</div>
+
+<div id="tab-plan" class="tab-panel active">
+  <div class="weeks-container" id="weeks-container"></div>
+</div>
+
+<div id="tab-debts" class="tab-panel">
+  <div class="summary-section">
+    <div class="summary-card">
+      <h3>🔴 ЛОМБАРДЫ (Приоритет #1 — каждый день = расходы)</h3>
+      <div class="debt-item"><span class="debt-name">DEM mobile — телефон</span><span class="debt-total">500 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Dengiclick — вещь 1</span><span class="debt-total">194 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Dengiclick — вещь 2</span><span class="debt-total">157 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Dengiclick — вещь 3</span><span class="debt-total">142 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Dengiclick — вещь 4</span><span class="debt-total">68 000 ₸</span></div>
+    </div>
+    <div class="summary-card">
+      <h3>🟠 РАССРОЧКИ / ЗАЙМЫ</h3>
+      <div class="debt-item"><span class="debt-name">tgbai — 6 платежей по 28-м</span><span class="debt-total">196 817 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">cshbee — 4 платежа по 28-м</span><span class="debt-total">170 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">maxmn — 5 платежей по 28-м</span><span class="debt-total">250 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">МЕГА — разовый 25.06</span><span class="debt-total">311 033 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Тач — 25.06 (210к) + 25.07 (70к)</span><span class="debt-total">280 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Solva — 10.07+28.07+10.08+28.08</span><span class="debt-total">340 000 ₸</span></div>
+    </div>
+    <div class="summary-card">
+      <h3>🟡 ДОЛГИ ЛЮДЯМ (несрочные)</h3>
+      <div class="debt-item"><span class="debt-name">Нургуль</span><span class="debt-total">50 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Сека</span><span class="debt-total">60 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Славик</span><span class="debt-total">200 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Кони</span><span class="debt-total">300 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Нурлан</span><span class="debt-total">1 000 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">ВИ</span><span class="debt-total">3 500 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Бабуля (500к/мес × 8, с 19.06)</span><span class="debt-total">4 000 000 ₸</span></div>
+    </div>
+    <div class="summary-card" style="border-color:rgba(39,174,96,0.3)">
+      <h3 style="color:var(--green)">📊 ИТОГО</h3>
+      <div class="debt-item"><span class="debt-name">Ломбарды</span><span class="debt-total">1 061 000 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Рассрочки / займы</span><span class="debt-total">1 547 850 ₸</span></div>
+      <div class="debt-item"><span class="debt-name">Долги людям</span><span class="debt-total">9 110 000 ₸</span></div>
+      <div class="debt-item" style="border-top:1px solid var(--border);margin-top:4px;padding-top:5px">
+        <span style="color:var(--ivory);font-weight:500">ВСЕГО</span>
+        <span style="color:var(--red);font-weight:500">11 718 850 ₸</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-principles" class="tab-panel">
+  <div class="principles">
+    <div style="font-size:0.7rem;color:var(--ivory-dim);margin-bottom:10px;line-height:1.6;">Принципы из лучших книг о личных финансах — твой ежедневный компас.</div>
+    <div class="principle-card"><div class="principle-num">1</div><div class="principle-text"><strong>Сначала заплати себе</strong> (Бодо Шефер)<br>10% с каждого поступления уходят в «Маленького Гуся» ДО любых других платежей.</div></div>
+    <div class="principle-card"><div class="principle-num">2</div><div class="principle-text"><strong>Ломбарды — яд с таймером</strong> (Dave Ramsey)<br>Каждый день просрочки = потери. Частичное досрочное погашение уменьшает итоговую сумму выкупа.</div></div>
+    <div class="principle-card"><div class="principle-num">3</div><div class="principle-text"><strong>Снежный ком</strong> (Dave Ramsey)<br>Гаси самый маленький долг первым — освобождаешь денежный поток для следующего.</div></div>
+    <div class="principle-card"><div class="principle-num">4</div><div class="principle-text"><strong>Бюджет — это свобода</strong> (Бодо Шефер)<br>Знать, куда уходит каждый тенге — значит управлять жизнью, а не жить в «пожаре».</div></div>
+    <div class="principle-card"><div class="principle-num">5</div><div class="principle-text"><strong>Бонус = оружие</strong> (T. Harv Eker)<br>80% любого внепланового дохода — на долг, 10% — в депозит, 10% — на жизнь.</div></div>
+    <div class="principle-card"><div class="principle-num">6</div><div class="principle-text"><strong>Не трогай «Гуся»</strong> (Кийосаки)<br>Депозит — актив. Снятие уничтожает сложный процент. Только пополнение.</div></div>
+    <div class="principle-card"><div class="principle-num">7</div><div class="principle-text"><strong>Маленькие победы = импульс</strong> (James Clear)<br>Каждый закрытый долг — сигнал мозгу «я справляюсь». Отмечай каждую победу.</div></div>
+    <div class="principle-card"><div class="principle-num">8</div><div class="principle-text"><strong>Никаких новых долгов</strong> (Бодо Шефер)<br>Пока не закрыт последний долг — никаких займов. Только экстренная медицина — исключение.</div></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE  — вшито при сохранении, иначе пустой объект
+// ============================================================
+const TOTAL_DEBT_START = 11718850;
+const DEPOSIT_START = 97776;
+
+// SAVED_STATE заменяется при экспорте файла
+const SAVED_STATE = /*STATE_PLACEHOLDER*/null/*END_STATE*/;
+
+let STATE = (SAVED_STATE && typeof SAVED_STATE === 'object')
+  ? SAVED_STATE
+  : (() => { try { return JSON.parse(localStorage.getItem('fin2026_state') || '{}'); } catch(e) { return {}; } })();
+
+function saveState(s) {
+  // Попытка localStorage как резервная копия
+  try { localStorage.setItem('fin2026_state', JSON.stringify(s)); } catch(e) {}
+}
+
+// ============================================================
+// ЭКСПОРТ: сохранить файл с вшитым состоянием
+// ============================================================
+function saveToFile() {
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '⏳ Сохранение...';
+  btn.disabled = true;
+
+  // Читаем исходный HTML этой страницы
+  const xhr = new XMLHttpRequest();
+  // Для локального файла используем текущий URL
+  xhr.open('GET', window.location.href, true);
+  xhr.onload = function() {
+    let html = xhr.responseText;
+    const stateJson = JSON.stringify(STATE);
+    // Заменяем placeholder на актуальное состояние
+    html = html.replace(
+      /\/\*STATE_PLACEHOLDER\*\/[\s\S]*?\/\*END_STATE\*\//,
+      '/*STATE_PLACEHOLDER*/' + stateJson + '/*END_STATE*/'
+    );
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'debt_freedom_plan_2026.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    btn.textContent = '✓ Сохранено';
+    btn.style.color = '#80FFB0';
+    setTimeout(() => {
+      btn.textContent = '💾 Сохранить';
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 2500);
+  };
+  xhr.onerror = function() {
+    // Fallback: serialize current document
+    let html = document.documentElement.outerHTML;
+    const stateJson = JSON.stringify(STATE);
+    html = html.replace(
+      /\/\*STATE_PLACEHOLDER\*\/[\s\S]*?\/\*END_STATE\*\//,
+      '/*STATE_PLACEHOLDER*/' + stateJson + '/*END_STATE*/'
+    );
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'debt_freedom_plan_2026.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    btn.textContent = '✓ Сохранено';
+    btn.style.color = '#80FFB0';
+    setTimeout(() => {
+      btn.textContent = '💾 Сохранить';
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 2500);
+  };
+  xhr.send();
+}
+
+function getDepositTotal() {
+  let total = DEPOSIT_START;
+  (STATE.deposits || []).forEach(d => total += d.amount);
+  return total;
+}
+
+function getPaidTotal() {
+  let paid = 0;
+  (STATE.paid || []).forEach(p => paid += p.amount);
+  return paid;
+}
+
+function updateHeader() {
+  const depTotal = getDepositTotal();
+  const paidTotal = getPaidTotal();
+  const remaining = TOTAL_DEBT_START - paidTotal;
+  const pct = Math.min(100, Math.round((paidTotal / TOTAL_DEBT_START) * 100));
+
+  document.getElementById('stat-debt').textContent = remaining.toLocaleString('ru-RU') + ' ₸';
+  document.getElementById('stat-deposit').textContent = depTotal.toLocaleString('ru-RU') + ' ₸';
+  document.getElementById('stat-pct').textContent = pct + '%';
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct2').textContent = pct + '% из ' + TOTAL_DEBT_START.toLocaleString('ru-RU') + ' ₸';
+
+  // Deposit card
+  document.getElementById('dep-invested').textContent = depTotal.toLocaleString('ru-RU') + ' ₸';
+  document.getElementById('dep-balance').textContent = depTotal.toLocaleString('ru-RU') + ' ₸';
+  const forecast = Math.round(depTotal * 1.0503); // ~3 month at 20.01% GAESV
+  document.getElementById('dep-forecast').textContent = '≈ ' + forecast.toLocaleString('ru-RU') + ' ₸';
+}
+
+// ============================================================
+// WEEKS DATA
+// ============================================================
+const WEEKS = [
+
+// ═══ ФАЗА 1: ЛОМБАРДЫ — КРИТИЧЕСКАЯ ЗОНА ═══
+{
+  phase: "ФАЗА 1 — ЛОМБАРДЫ: КРИТИЧЕСКАЯ ЗОНА",
+  num: 1, dates: "01 – 07 июня",
+  openingBalance: 154000,
+  income: [],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+    { label: "DEM mobile — продление на 2 нед", amount: 50000, cls: "lombard", note: "Срок 4.06. 50к = +2 недели. Следующий дедлайн ~18.06." },
+    { label: "Dengiclick — продление всех 4 вещей на 25 дней", amount: 50000, cls: "lombard", note: "Срок 8.06. 50к за все 4 вещи. Новый срок ~3.07." },
+  ],
+  closingBalance: 4000,
+  tip: "⚠️ Критическая неделя — оба ломбарда должны быть продлены. DEM: оплата до 4.06, Dengiclick: до 8.06. Остаток 4 000 ₸ — НЗ до зарплаты 12.06.",
+  alert: null,
+  book: { title: "Бодо Шефер — «Путь к финансовой свободе»", lesson: "«Тот, кто не управляет деньгами, будет всегда управляем ими.»" },
+  tasks: [
+    { text: "Оплатить продление DEM mobile — 50 000 ₸ (до 4.06)", amount: 50000, debtKey: null },
+    { text: "Оплатить продление Dengiclick (все 4 вещи) — 50 000 ₸ (до 8.06)", amount: 50000, debtKey: null },
+    { text: "Записать все расходы недели в заметки", amount: null, debtKey: null },
+  ],
+  deposit: null,
+},
+
+{
+  num: 2, dates: "08 – 14 июня",
+  openingBalance: 4000,
+  income: [
+    { label: "Зарплата", amount: 350000, note: "12 июня (пт) — перенос с 14.06 вс" },
+  ],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+    { label: "DEM mobile — частичное досрочное погашение", amount: 100000, cls: "lombard", note: "12.06 сразу вносим 100к из зарплаты. Уменьшает итоговый выкуп: вместо 500к нужно будет ~400к." },
+  ],
+  closingBalance: 204000,
+  tip: "12.06 приходит зарплата 350к. Сразу 100к → досрочный взнос в DEM mobile. Это уменьшает итоговый выкуп телефона. Остаток 204к — копится до 19.06 (жильё + бабуля придут с доп. доходом).",
+  alert: null,
+  book: { title: "Dave Ramsey — «Total Money Makeover»", lesson: "«Жизнь без долгов — это не мечта. Это план.» Каждый досрочный взнос сокращает ломбардные потери." },
+  tasks: [
+    { text: "Внести 100 000 ₸ в DEM mobile как частичное досрочное погашение", amount: 100000, debtKey: "dem_partial" },
+  ],
+  deposit: null,
+},
+
+{
+  num: 3, dates: "15 – 21 июня",
+  openingBalance: 204000,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 июня" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.06" },
+    { label: "Бабуля — 1-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.06 — старт погашения 4 млн" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 254000,
+  tip: "1.2 млн доп. дохода покрывают жильё + первый платёж бабуле. Остаток 254к — держи до платежей 25-26.06.",
+  alert: null,
+  book: { title: "Бодо Шефер — «Маленький Гусь»", lesson: "«Каждый тенге, отложенный сегодня, работает на тебя завтра.»" },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.06", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (1/8) — 19.06", amount: 500000, debtKey: "babula_1" },
+  ],
+  deposit: { weekNum: 3, suggested: 20000, label: "Пополнить депозит «Маленький Гусь»", note: "Хотя бы 20к — привычка важнее суммы" },
+},
+
+{
+  num: 4, dates: "22 – 28 июня",
+  openingBalance: 234000, // after deposit suggestion of 20k
+  income: [
+    { label: "Зарплата + Праздничный бонус", amount: 1436000, note: "26 июня (пт) — перенос с 28.06 вс. Оба поступления в один день." },
+  ],
+  outflows: [
+    { label: "МЕГА — полное погашение", amount: 311033, cls: "debtpay", note: "25.06" },
+    { label: "Тач — 1-й платёж", amount: 210000, cls: "debtpay", note: "25.06" },
+    { label: "Юни", amount: 500000, cls: "expense", note: "26.06 — перенос с 28.06" },
+    { label: "tgbai — ежемесячный", amount: 32803, cls: "debtpay", note: "26.06" },
+    { label: "cshbee — ежемесячный", amount: 42500, cls: "debtpay", note: "26.06" },
+    { label: "maxmn — ежемесячный", amount: 50000, cls: "debtpay", note: "26.06" },
+    { label: "DEM mobile — ВЫКУП (~400к остаток)", amount: 400000, cls: "lombard", note: "26-27.06. После досрочного 100к в нед.2 остаток выкупа ≈ 400к." },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 73464,
+  tip: "🎯 Самая мощная неделя: зарплата + бонус = 1 436 000 ₸. 25.06 закрыть МЕГА + Тач-1 (521к). 26.06 из зарплаты — Юни + рассрочки + ВЫКУП DEM mobile (~400к после досрочного взноса). Телефон возвращается!",
+  alert: "⚡ ВАЖНО: МЕГА и Тач платятся 25.06 из остатка 234к — убедись что хватает (234к > 521к НЕТ). Значит оплата МЕГА и Тач производится ПОСЛЕ получения зарплаты 26.06. Дата 25.06 — лишь срок, фактически можно оплатить в тот же день.",
+  book: { title: "T. Harv Eker — «Думай как миллионер»", lesson: "«Богатые управляют деньгами. Бедными управляют деньги.» Бонус — не для трат, а для свободы." },
+  tasks: [
+    { text: "Оплатить МЕГА 311 033 ₸ — 26.06 (из зарплаты)", amount: 311033, debtKey: "mega" },
+    { text: "Оплатить Тач 1-й взнос 210 000 ₸ — 26.06", amount: 210000, debtKey: "tach_1" },
+    { text: "Оплатить Юни 500 000 ₸ — 26.06", amount: 500000, debtKey: null },
+    { text: "Оплатить tgbai 32 803 ₸ — 26.06", amount: 32803, debtKey: "tgbai_1" },
+    { text: "Оплатить cshbee 42 500 ₸ — 26.06", amount: 42500, debtKey: "cshbee_1" },
+    { text: "Оплатить maxmn 50 000 ₸ — 26.06", amount: 50000, debtKey: "maxmn_1" },
+    { text: "ВЫКУПИТЬ DEM mobile ~400 000 ₸ — 26-27.06 🎉", amount: 400000, debtKey: "dem_full" },
+  ],
+  deposit: { weekNum: 4, suggested: 50000, label: "Пополнить депозит из бонуса", note: "50к с бонуса — правило 10% от внеплановых доходов" },
+},
+
+// ═══ ФАЗА 2: DENGICLICK — СНЕЖНЫЙ КОМ ═══
+{
+  phase: "ФАЗА 2 — DENGICLICK: СНЕЖНЫЙ КОМ",
+  num: 5, dates: "29 июня – 05 июля",
+  openingBalance: 23464, // 73464 - 50k deposit
+  income: [],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 0,
+  tip: "Тихая неделя. DEM mobile закрыт — победа! Остаток минимальный, ждём зарплату 14.07. Держи НЗ.",
+  alert: "Остаток ~23к — очень мало. Экономь на еде и транспорте, обходись минимумом.",
+  book: { title: "Dave Ramsey — «Baby Steps»", lesson: "Шаг 2: Погашай от меньшего к большему. Dengiclick вещь 4 (68к) — следующая цель." },
+  tasks: [
+    { text: "Сократить расходы на еду/транспорт до минимума на этой неделе", amount: null, debtKey: null },
+  ],
+  deposit: null,
+},
+
+{
+  num: 6, dates: "06 – 12 июля",
+  openingBalance: 0,
+  income: [
+    { label: "Зарплата", amount: 350000, note: "14 июля (вт) — рабочий день, без переноса. Фактически поступление на счёт 14.07." },
+  ],
+  outflows: [
+    { label: "Solva — 1-й платёж", amount: 20000, cls: "debtpay", note: "10.07" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+    { label: "Dengiclick — ВЫКУП вещи 4 (самая дешёвая)", amount: 68000, cls: "lombard", note: "Снежный ком: начинаем с 68к" },
+  ],
+  closingBalance: 212000,
+  tip: "Зарплата 350к. Solva 10к (10.07). После зарплаты — сразу выкупить вещь 4 Dengiclick (68к). Это первый ломбард снежного кома.",
+  alert: null,
+  book: { title: "Роберт Кийосаки — «Богатый папа»", lesson: "«Активы кладут деньги в карман. Долги — вынимают.» Каждая выкупленная вещь — это актив времени." },
+  tasks: [
+    { text: "Оплатить Solva 20 000 ₸ — 10.07", amount: 20000, debtKey: "solva_1" },
+    { text: "ВЫКУПИТЬ Dengiclick вещь 4 — 68 000 ₸ 🎉", amount: 68000, debtKey: "dng4" },
+  ],
+  deposit: null,
+},
+
+{
+  num: 7, dates: "13 – 19 июля",
+  openingBalance: 212000,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 июля" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.07" },
+    { label: "Бабуля — 2-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.07" },
+    { label: "Dengiclick — ВЫКУП вещи 3", amount: 142000, cls: "lombard" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 120000,
+  tip: "Доп. доход 1.2 млн покрывает всё. После жилья и бабули выкупаем вещь 3 (142к). Остаток 120к — держи до платежей 25-28.07.",
+  alert: null,
+  book: { title: "Бодо Шефер", lesson: "«Человек с планом всегда обгоняет того, кто просто надеется.»" },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.07", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (2/8) — 19.07", amount: 500000, debtKey: "babula_2" },
+    { text: "ВЫКУПИТЬ Dengiclick вещь 3 — 142 000 ₸ 🎉", amount: 142000, debtKey: "dng3" },
+  ],
+  deposit: { weekNum: 7, suggested: 20000, label: "Пополнить депозит", note: "20к из доп. дохода" },
+},
+
+{
+  num: 8, dates: "20 – 26 июля",
+  openingBalance: 100000, // 120k - 20k deposit
+  income: [
+    { label: "Зарплата", amount: 718000, note: "28 июля (вт) — рабочий день" },
+  ],
+  outflows: [
+    { label: "Тач — 2-й (последний) платёж", amount: 70000, cls: "debtpay", note: "25.07 — ТАЧ ЗАКРЫТ!" },
+    { label: "Юни", amount: 500000, cls: "expense", note: "28.07" },
+    { label: "tgbai — ежемесячный", amount: 32803, cls: "debtpay", note: "28.07" },
+    { label: "cshbee — ежемесячный", amount: 42500, cls: "debtpay", note: "28.07" },
+    { label: "maxmn — ежемесячный", amount: 50000, cls: "debtpay", note: "28.07" },
+    { label: "Solva — 2-й платёж", amount: 150000, cls: "debtpay", note: "28.07" },
+    { label: "Dengiclick — ВЫКУП вещи 2", amount: 157000, cls: "lombard" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 115697,
+  tip: "Тяжёлая неделя по платежам — Юни + Solva 150к + рассрочки + Тач (закрыт!). Из остатка + зарплаты выкупить вещь 2 Dengiclick (157к). Остался 1 лот Dengiclick.",
+  alert: null,
+  book: { title: "Dave Ramsey", lesson: "«Финансовый успех — это не удача. Это поведение.» ТАЧ ЗАКРЫТ — отметь это!" },
+  tasks: [
+    { text: "Оплатить Тач 70 000 ₸ (последний) — 25.07 ✅ ТАЧ ЗАКРЫТ", amount: 70000, debtKey: "tach_2" },
+    { text: "Оплатить Юни 500 000 ₸ — 28.07", amount: 500000, debtKey: null },
+    { text: "Оплатить tgbai 32 803 ₸ — 28.07", amount: 32803, debtKey: "tgbai_2" },
+    { text: "Оплатить cshbee 42 500 ₸ — 28.07", amount: 42500, debtKey: "cshbee_2" },
+    { text: "Оплатить maxmn 50 000 ₸ — 28.07", amount: 50000, debtKey: "maxmn_2" },
+    { text: "Оплатить Solva 150 000 ₸ — 28.07", amount: 150000, debtKey: "solva_2" },
+    { text: "ВЫКУПИТЬ Dengiclick вещь 2 — 157 000 ₸ 🎉", amount: 157000, debtKey: "dng2" },
+  ],
+  deposit: null,
+},
+
+// ═══ ФАЗА 3: ПОСЛЕДНЯЯ ВЕЩЬ + SOLVA ═══
+{
+  phase: "ФАЗА 3 — ФИНАЛ ЛОМБАРДОВ + SOLVA",
+  num: 9, dates: "27 июля – 02 авг",
+  openingBalance: 115697,
+  income: [],
+  outflows: [
+    { label: "Dengiclick — ВЫКУП вещи 1 (последней!)", amount: 115000, cls: "lombard", note: "194к — к этому моменту возможно частичные взносы снизили сумму. Закладываем 115к." },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 0,
+  tip: "🎉 DENGICLICK ПОЛНОСТЬЮ ЗАКРЫТ! Все 4 вещи выкуплены. Больше ни одного ломбарда. Это сэкономило тысячи тенге на продлениях. Режим экономии до зарплаты 14.08.",
+  alert: "Если к этому моменту вещь 1 стоит дороже остатка — внести частичный взнос и выкупить полностью после зарплаты 14.08.",
+  book: { title: "Морган Хаузел — «Психология денег»", lesson: "«Долгосрочное мышление — самый мощный финансовый инструмент.»" },
+  tasks: [
+    { text: "ВЫКУПИТЬ Dengiclick вещь 1 — последний ломбард 🏆", amount: 194000, debtKey: "dng1" },
+  ],
+  deposit: null,
+},
+
+{
+  num: 10, dates: "03 – 09 августа",
+  openingBalance: 0,
+  income: [
+    { label: "Зарплата", amount: 350000, note: "14 авг (пт) — рабочий день" },
+  ],
+  outflows: [
+    { label: "Solva — 3-й платёж", amount: 20000, cls: "debtpay", note: "10.08" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 280000,
+  tip: "Тихая неделя. Solva 20к (10.08), зарплата 14.08. Копи на большой платёж Solva 28.08 (150к) и рассрочки.",
+  alert: null,
+  book: { title: "T. Harv Eker", lesson: "«Богатые думают о больших числах. Бедные думают о мелочах.» Видь конец долгов." },
+  tasks: [
+    { text: "Оплатить Solva 20 000 ₸ — 10.08", amount: 20000, debtKey: "solva_3" },
+  ],
+  deposit: null,
+},
+
+{
+  num: 11, dates: "10 – 16 августа",
+  openingBalance: 280000,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 августа" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.08" },
+    { label: "Бабуля — 3-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.08" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 330000,
+  tip: "Доп. доход закрывает жильё и бабулю. Остаток 330к — на платежи 28.08 и пополнение депозита.",
+  alert: null,
+  book: { title: "Бодо Шефер", lesson: "«Правило 10%: откладывай 10% с каждого поступления.»" },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.08", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (3/8) — 19.08", amount: 500000, debtKey: "babula_3" },
+  ],
+  deposit: { weekNum: 11, suggested: 30000, label: "Пополнить депозит", note: "30к из доп. дохода — хорошая сумма" },
+},
+
+{
+  num: 12, dates: "17 – 23 августа",
+  openingBalance: 300000, // 330k - 30k deposit
+  income: [
+    { label: "Зарплата", amount: 718000, note: "28 авг (пт) — рабочий день" },
+  ],
+  outflows: [
+    { label: "Юни", amount: 500000, cls: "expense", note: "28.08" },
+    { label: "tgbai — ежемесячный", amount: 32803, cls: "debtpay", note: "28.08" },
+    { label: "cshbee — ежемесячный", amount: 42500, cls: "debtpay", note: "28.08" },
+    { label: "maxmn — ежемесячный", amount: 50000, cls: "debtpay", note: "28.08" },
+    { label: "Solva — 4-й (последний!) платёж", amount: 150000, cls: "debtpay", note: "28.08 — SOLVA ЗАКРЫТА!" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 242697,
+  tip: "🎉 SOLVA ЗАКРЫТА! (4 платежа выплачены). Зарплата покрывает всё. Хороший остаток для сентябрьских платежей.",
+  alert: null,
+  book: { title: "Роберт Кийосаки", lesson: "«Финансовая грамотность — не то, чему учат в школе. Её учишь сам.»" },
+  tasks: [
+    { text: "Оплатить Юни 500 000 ₸ — 28.08", amount: 500000, debtKey: null },
+    { text: "Оплатить tgbai 32 803 ₸ — 28.08", amount: 32803, debtKey: "tgbai_3" },
+    { text: "Оплатить cshbee 42 500 ₸ — 28.08", amount: 42500, debtKey: "cshbee_3" },
+    { text: "Оплатить maxmn 50 000 ₸ — 28.08", amount: 50000, debtKey: "maxmn_3" },
+    { text: "Оплатить Solva 150 000 ₸ (последний) — 28.08 ✅ SOLVA ЗАКРЫТА", amount: 150000, debtKey: "solva_4" },
+  ],
+  deposit: null,
+},
+
+// ═══ ФАЗА 4: СЕНТЯБРЬ — ПОСЛЕДНИЕ РАССРОЧКИ ═══
+{
+  phase: "ФАЗА 4 — СЕНТЯБРЬ: ПОСЛЕДНИЕ РАССРОЧКИ",
+  num: 13, dates: "24 – 30 августа",
+  openingBalance: 242697,
+  income: [],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 192697,
+  tip: "Буфер после тяжёлого августа. Копи на платёж бабуле 19.09 и рассрочки 25.09.",
+  alert: null,
+  book: { title: "Napoleon Hill — «Думай и богатей»", lesson: "«Деньги любят тишину и терпение.»" },
+  tasks: [
+    { text: "Подтвердить дату доп. дохода в следующем месяце (19.09)", amount: null, debtKey: null },
+  ],
+  deposit: null,
+},
+
+{
+  num: 14, dates: "31 авг – 06 сент",
+  openingBalance: 192697,
+  income: [
+    { label: "Зарплата", amount: 350000, note: "11 сент (пт) — перенос с 14.09 вс" },
+  ],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 492697,
+  tip: "Зарплата 11.09. Спокойная неделя — аккумулируй для платежей 19.09.",
+  alert: null,
+  book: { title: "Морган Хаузел", lesson: "«Скорость погашения = скорость накопления.»" },
+  tasks: [],
+  deposit: null,
+},
+
+{
+  num: 15, dates: "07 – 13 сентября",
+  openingBalance: 492697,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 сентября" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.09" },
+    { label: "Бабуля — 4-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.09" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 542697,
+  tip: "Доп. доход покрывает жильё и бабулю. Хороший остаток для платежей 25.09.",
+  alert: null,
+  book: { title: "Бодо Шефер", lesson: "«Долг — это рабство с процентами.» С каждым месяцем долг бабуле тает." },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.09", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (4/8) — 19.09", amount: 500000, debtKey: "babula_4" },
+  ],
+  deposit: { weekNum: 15, suggested: 30000, label: "Пополнить депозит", note: "30к из доп. дохода" },
+},
+
+{
+  num: 16, dates: "14 – 20 сентября",
+  openingBalance: 512697, // 542697 - 30k deposit
+  income: [
+    { label: "Зарплата", amount: 718000, note: "25 сент (пт) — перенос с 28.09 вс" },
+  ],
+  outflows: [
+    { label: "Юни", amount: 500000, cls: "expense", note: "25.09" },
+    { label: "tgbai — ежемесячный", amount: 32803, cls: "debtpay", note: "25.09" },
+    { label: "cshbee — ежемесячный", amount: 42500, cls: "debtpay", note: "25.09" },
+    { label: "maxmn — ежемесячный", amount: 50000, cls: "debtpay", note: "25.09" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 555394,
+  tip: "Зарплата 25.09 (перенос). Все рассрочки оплачиваются в тот же день. Хороший остаток — в октябре начинаем закрывать мелкие личные долги.",
+  alert: null,
+  book: { title: "Dave Ramsey", lesson: "«Финансовый мир будет помнить твою победу, не боль.»" },
+  tasks: [
+    { text: "Оплатить Юни 500 000 ₸ — 25.09", amount: 500000, debtKey: null },
+    { text: "Оплатить tgbai 32 803 ₸ — 25.09", amount: 32803, debtKey: "tgbai_4" },
+    { text: "Оплатить cshbee 42 500 ₸ (предпоследний) — 25.09", amount: 42500, debtKey: "cshbee_4" },
+    { text: "Оплатить maxmn 50 000 ₸ — 25.09", amount: 50000, debtKey: "maxmn_4" },
+  ],
+  deposit: null,
+},
+
+// ═══ ФАЗА 5: ОКТЯБРЬ — ЛИЧНЫЕ ДОЛГИ + БОНУС ═══
+{
+  phase: "ФАЗА 5 — ОКТЯБРЬ: ЛИЧНЫЕ ДОЛГИ + БОНУС",
+  num: 17, dates: "21 – 27 сентября",
+  openingBalance: 555394,
+  income: [],
+  outflows: [
+    { label: "Нургуль — ЗАКРЫТ", amount: 50000, cls: "debtpay" },
+    { label: "Сека — ЗАКРЫТ", amount: 60000, cls: "debtpay" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 395394,
+  tip: "Закрываем двух мелких кредиторов — снежный ком ускоряется. Впереди октябрьский бонус 23.10.",
+  alert: null,
+  book: { title: "James Clear — «Атомные привычки»", lesson: "«Маленькие победы создают импульс.» Нургуль + Сека = 2 победы за неделю." },
+  tasks: [
+    { text: "Закрыть долг Нургуль — 50 000 ₸ 🎉", amount: 50000, debtKey: "nurgul" },
+    { text: "Закрыть долг Сека — 60 000 ₸ 🎉", amount: 60000, debtKey: "seka" },
+  ],
+  deposit: null,
+},
+
+{
+  num: 18, dates: "28 сент – 04 окт",
+  openingBalance: 395394,
+  income: [
+    { label: "Зарплата", amount: 350000, note: "14 окт (ср) — рабочий день" },
+  ],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 695394,
+  tip: "Спокойная неделя. Зарплата 14.10. Копи — 19.10 будет доп. доход + жильё + бабуля. Затем бонус 23.10.",
+  alert: null,
+  book: { title: "Морган Хаузел", lesson: "«Сбережения — это разрыв между твоим эго и твоим доходом.»" },
+  tasks: [],
+  deposit: null,
+},
+
+{
+  num: 19, dates: "05 – 11 октября",
+  openingBalance: 695394,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 октября" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.10" },
+    { label: "Бабуля — 5-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.10" },
+    { label: "Slavik — ЗАКРЫТ", amount: 200000, cls: "debtpay" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 545394,
+  tip: "Slavik закрыт из доп. дохода! Бонус 23.10 — направь на Кони (300к) и начало Нурлана.",
+  alert: null,
+  book: { title: "Бодо Шефер", lesson: "«Чем больше ты отдаёшь долгов, тем больше становится твоих денег.»" },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.10", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (5/8) — 19.10", amount: 500000, debtKey: "babula_5" },
+    { text: "Закрыть долг Slavik — 200 000 ₸ 🎉", amount: 200000, debtKey: "slavik" },
+  ],
+  deposit: { weekNum: 19, suggested: 30000, label: "Пополнить депозит", note: "30к из доп. дохода" },
+},
+
+{
+  num: 20, dates: "12 – 18 октября",
+  openingBalance: 515394, // 545394 - 30k deposit
+  income: [
+    { label: "Зарплата + Праздничный бонус", amount: 1436000, note: "Зарплата 28.10 (ср), бонус 23.10 (пт)" },
+  ],
+  outflows: [
+    { label: "Юни", amount: 500000, cls: "expense", note: "28.10" },
+    { label: "tgbai — ежемесячный", amount: 32803, cls: "debtpay", note: "28.10" },
+    { label: "cshbee — ПОСЛЕДНИЙ", amount: 42500, cls: "debtpay", note: "28.10 — CSHBEE ЗАКРЫТ!" },
+    { label: "maxmn — ежемесячный", amount: 50000, cls: "debtpay", note: "28.10" },
+    { label: "Кони — ЗАКРЫТ (из бонуса)", amount: 300000, cls: "debtpay" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 976091,
+  tip: "🚀 Двойной удар: зарплата + бонус = 1 436к. cshbee закрыт (последний платёж)! Кони закрыт из бонуса! Остаток >976к — направь 500-700к на Нурлан.",
+  alert: null,
+  book: { title: "T. Harv Eker", lesson: "«Богатые используют внеплановые деньги для создания богатства.»" },
+  tasks: [
+    { text: "Оплатить Кони 300 000 ₸ из бонуса — 23.10 🎉 КОНИ ЗАКРЫТ", amount: 300000, debtKey: "koni" },
+    { text: "Оплатить Юни 500 000 ₸ — 28.10", amount: 500000, debtKey: null },
+    { text: "Оплатить tgbai 32 803 ₸ — 28.10", amount: 32803, debtKey: "tgbai_5" },
+    { text: "Оплатить cshbee 42 500 ₸ (последний) — 28.10 ✅ CSHBEE ЗАКРЫТ", amount: 42500, debtKey: "cshbee_last" },
+    { text: "Оплатить maxmn 50 000 ₸ — 28.10", amount: 50000, debtKey: "maxmn_5" },
+    { text: "Перевести Нурлану 500 000 ₸ — первая часть из 1 млн", amount: 500000, debtKey: "nurlan_1" },
+  ],
+  deposit: { weekNum: 20, suggested: 70000, label: "Пополнить депозит из бонуса", note: "70к — 10% от бонуса 718к" },
+},
+
+// ═══ ФАЗА 6: НОЯБРЬ — НУРЛАН + ФИНАЛ РАССРОЧЕК ═══
+{
+  phase: "ФАЗА 6 — НОЯБРЬ: НУРЛАН + ФИНАЛ РАССРОЧЕК",
+  num: 21, dates: "19 – 25 октября",
+  openingBalance: 406091, // 976091 - 500k nurlan - 70k deposit
+  income: [],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 356091,
+  tip: "Нурлан получил первые 500к. Остаток — держи до доп. дохода 19.11.",
+  alert: null,
+  book: { title: "Napoleon Hill", lesson: "«Нет поражений — есть только временные неудачи.»" },
+  tasks: [
+    { text: "Договориться с Нурланом о дате финального платежа (500к, ноябрь)", amount: null, debtKey: null },
+  ],
+  deposit: null,
+},
+
+{
+  num: 22, dates: "26 окт – 01 ноября",
+  openingBalance: 356091,
+  income: [
+    { label: "Зарплата", amount: 350000, note: "13 ноя (пт) — перенос с 14.11 сб" },
+  ],
+  outflows: [
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 656091,
+  tip: "Зарплата 13.11. Тихая неделя — аккумулируй для платежей 19.11 (жильё + бабуля + Нурлан).",
+  alert: null,
+  book: { title: "Dave Ramsey", lesson: "«Когда ты погашаешь долг — ты даёшь себе повышение.»" },
+  tasks: [],
+  deposit: null,
+},
+
+{
+  num: 23, dates: "02 – 08 ноября",
+  openingBalance: 656091,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 ноября" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.11" },
+    { label: "Бабуля — 6-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.11" },
+    { label: "Нурлан — ФИНАЛЬНЫЙ платёж (2/2)", amount: 500000, cls: "debtpay", note: "НУРЛАН ЗАКРЫТ!" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 206091,
+  tip: "🎉 НУРЛАН ЗАКРЫТ (2 платежа по 500к)! Доп. доход покрывает всё. Бабуле остаётся 2 платежа из 8.",
+  alert: null,
+  book: { title: "Бодо Шефер", lesson: "«Каждый тенге в будущее — это голос за себя.»" },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.11", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (6/8) — 19.11", amount: 500000, debtKey: "babula_6" },
+    { text: "Перевести Нурлану 500 000 ₸ (2/2) — 19.11 ✅ НУРЛАН ЗАКРЫТ 🎉", amount: 500000, debtKey: "nurlan_2" },
+  ],
+  deposit: { weekNum: 23, suggested: 30000, label: "Пополнить депозит", note: "30к из доп. дохода" },
+},
+
+{
+  num: 24, dates: "09 – 15 ноября",
+  openingBalance: 176091, // 206091 - 30k deposit
+  income: [
+    { label: "Зарплата", amount: 718000, note: "27 ноя (пт) — перенос с 28.11 сб" },
+  ],
+  outflows: [
+    { label: "Юни", amount: 500000, cls: "expense", note: "27.11" },
+    { label: "tgbai — ежемесячный", amount: 32803, cls: "debtpay", note: "27.11" },
+    { label: "maxmn — ПОСЛЕДНИЙ", amount: 50000, cls: "debtpay", note: "27.11 — MAXMN ЗАКРЫТ!" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 261288,
+  tip: "🎉 MAXMN ЗАКРЫТ (5 платежей выплачены)! Зарплата 27.11 (перенос). Копи на декабрьские бонусы.",
+  alert: null,
+  book: { title: "Морган Хаузел", lesson: "«Богатство незаметно строится.» Декабрь принесёт два бонуса." },
+  tasks: [
+    { text: "Оплатить Юни 500 000 ₸ — 27.11", amount: 500000, debtKey: null },
+    { text: "Оплатить tgbai 32 803 ₸ — 27.11", amount: 32803, debtKey: "tgbai_6" },
+    { text: "Оплатить maxmn 50 000 ₸ (последний) — 27.11 ✅ MAXMN ЗАКРЫТ", amount: 50000, debtKey: "maxmn_last" },
+  ],
+  deposit: null,
+},
+
+// ═══ ФАЗА 7: ДЕКАБРЬ — ДВОЙНОЙ БОНУС ═══
+{
+  phase: "ФАЗА 7 — ДЕКАБРЬ: ДВОЙНОЙ БОНУС",
+  num: 25, dates: "16 – 22 ноября",
+  openingBalance: 261288,
+  income: [
+    { label: "Доп. доход", amount: 1200000, note: "19 декабря" },
+  ],
+  outflows: [
+    { label: "Жильё", amount: 600000, cls: "expense", note: "19.12" },
+    { label: "Бабуля — 7-й платёж из 8", amount: 500000, cls: "debtpay", note: "19.12" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 311288,
+  tip: "7-й платёж бабуле (остался 1). Хороший запас перед декабрьскими бонусами.",
+  alert: null,
+  book: { title: "Бодо Шефер", lesson: "«Финансовая свобода — это не сумма денег. Это количество вариантов.»" },
+  tasks: [
+    { text: "Оплатить жильё 600 000 ₸ — 19.12", amount: 600000, debtKey: null },
+    { text: "Перевести бабуле 500 000 ₸ (7/8) — 19.12", amount: 500000, debtKey: "babula_7" },
+  ],
+  deposit: { weekNum: 25, suggested: 30000, label: "Пополнить депозит", note: "Готовь «Гуся» к реинвестированию в 2027" },
+},
+
+{
+  num: 26, dates: "23 – 29 ноября",
+  openingBalance: 281288, // 311288 - 30k deposit
+  income: [
+    { label: "Зарплата", amount: 350000, note: "11 дек (пт) — перенос с 14.12 вс" },
+    { label: "Бонус праздничный", amount: 718000, note: "15 дек (вт) — рабочий день" },
+  ],
+  outflows: [
+    { label: "tgbai — ПОСЛЕДНИЙ", amount: 32802, cls: "debtpay", note: "Ноябрьский — 27.11 (уже учтён в нед.24). Это финал." },
+    { label: "ВИ — часть 1 (из бонуса)", amount: 700000, cls: "debtpay", note: "15.12 — первый крупный взнос" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 566486,
+  tip: "🎉 TGBAI ЗАКРЫТ (6 платежей)! Зарплата 11.12 + бонус 15.12 = 1 068к. Сразу 700к → ВИ. Финальный спринт!",
+  alert: null,
+  book: { title: "Dave Ramsey", lesson: "«Газелья интенсивность: беги от долгов, как будто тебя преследует лев.»" },
+  tasks: [
+    { text: "TGBAI — последний платёж пройден ✅ TGBAI ЗАКРЫТ 🎉", amount: 32802, debtKey: "tgbai_last" },
+    { text: "Перевести ВИ 700 000 ₸ из бонуса — 15.12", amount: 700000, debtKey: "vi_1" },
+  ],
+  deposit: { weekNum: 26, suggested: 70000, label: "Пополнить депозит из бонуса", note: "70к — 10% от бонуса 718к" },
+},
+
+{
+  num: 27, dates: "30 ноя – 06 дек",
+  openingBalance: 496486, // 566486 - 70k deposit
+  income: [
+    { label: "Зарплата + Финальный бонус", amount: 1436000, note: "28 дек (пн) — оба поступления в один день" },
+  ],
+  outflows: [
+    { label: "Юни", amount: 500000, cls: "expense", note: "28.12" },
+    { label: "Бабуля — ФИНАЛЬНЫЙ 8-й платёж", amount: 500000, cls: "debtpay", note: "28.12 — БАБУЛЯ ЗАКРЫТА! 4 млн выплачено." },
+    { label: "ВИ — часть 2 (из бонуса)", amount: 1000000, cls: "debtpay", note: "28.12 — итого ВИ получил 1.7 млн из 3.5 млн" },
+    { label: "Еда / транспорт", amount: 50000, cls: "expense" },
+  ],
+  closingBalance: 882486,
+  tip: "🏆 ФИНАЛ ГОДА: Зарплата + бонус = 1 436к. БАБУЛЯ ЗАКРЫТА (8/8, 4 млн выплачено)! ВИ получил 1.7 млн из 3.5 млн — продолжим в 2027. Остаток ~882к — начало накопления!",
+  alert: null,
+  book: { title: "Роберт Кийосаки", lesson: "«Финансовая свобода начинается, когда активы приносят больше расходов.» Ты у порога." },
+  tasks: [
+    { text: "Перевести ВИ 1 000 000 ₸ — 28.12", amount: 1000000, debtKey: "vi_2" },
+    { text: "Перевести бабуле 500 000 ₸ (8/8) — 28.12 ✅ БАБУЛЯ ЗАКРЫТА 🎉", amount: 500000, debtKey: "babula_8" },
+    { text: "Оплатить Юни 500 000 ₸ — 28.12", amount: 500000, debtKey: null },
+  ],
+  deposit: { weekNum: 27, suggested: 100000, label: "Пополнить депозит из финального бонуса", note: "100к — старт накопительной фазы 2027" },
+},
+
+// ═══ ФАЗА 8: ИТОГИ ═══
+{
+  phase: "ФАЗА 8 — ИТОГИ 2026 И СТАРТ НАКОПЛЕНИЯ",
+  num: 28, dates: "07 – 31 декабря",
+  openingBalance: 782486, // 882486 - 100k deposit
+  income: [],
+  outflows: [
+    { label: "Еда / транспорт", amount: 100000, cls: "expense", note: "≈2 недели" },
+  ],
+  closingBalance: 682486,
+  tip: "🏆 ИТОГ 2026. Закрыты: ВСЕ ЛОМБАРДЫ, Тач, МЕГА, Solva, cshbee, tgbai, maxmn, Нургуль, Сека, Slavik, Кони, Нурлан, Бабуля (4 млн!). Остатки: ВИ (~1.8 млн) — план на 2027. Депозит работает. Ты сделал это.",
+  alert: null,
+  book: { title: "Бодо Шефер — «Путь к финансовой свободе»", lesson: "«Финансовая свобода — это не цифра. Это чувство, что деньги работают на тебя.» Ты заслужил это." },
+  tasks: [
+    { text: "Пролонгировать депозит «Маленький Гусь» на следующие 3 месяца", amount: null, debtKey: null },
+    { text: "Составить план погашения ВИ (~1.8 млн) в 2027", amount: null, debtKey: null },
+    { text: "Открыть инвестиционный счёт (акции / облигации)", amount: null, debtKey: null },
+    { text: "Поставить финансовую цель на 2027 (сумма накопления)", amount: null, debtKey: null },
+  ],
+  deposit: { weekNum: 28, suggested: 50000, label: "Дополнительное пополнение депозита", note: "Закрываем год красиво" },
+},
+
+];
+
+// ============================================================
+// RENDER
+// ============================================================
+function fmt(n) {
+  if (n == null || n === 0) return '—';
+  return n.toLocaleString('ru-RU') + ' ₸';
+}
+
+function bcls(n) {
+  if (n > 300000) return 'ok';
+  if (n > 100000) return 'warn';
+  return 'tight';
+}
+
+const container = document.getElementById('weeks-container');
+let curPhase = '';
+
+WEEKS.forEach((w, wi) => {
+  if (w.phase && w.phase !== curPhase) {
+    curPhase = w.phase;
+    const ph = document.createElement('div');
+    ph.className = 'phase-header';
+    ph.textContent = w.phase;
+    container.appendChild(ph);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'week-card';
+  card.id = 'week-' + w.num;
+  if (w.num === 1) card.classList.add('current-week');
+
+  let bodyHTML = '';
+
+  // Inflows
+  if (w.income && w.income.length) {
+    bodyHTML += `<div class="section-title">▲ ПОСТУПЛЕНИЯ</div>`;
+    w.income.forEach(it => {
+      bodyHTML += `<div class="flow-row">
+        <div class="flow-label"><em>${it.label}</em>${it.note ? `<small>${it.note}</small>` : ''}</div>
+        <div class="flow-amount income">+${fmt(it.amount)}</div>
+      </div>`;
+    });
+  }
+
+  // Outflows
+  if (w.outflows && w.outflows.length) {
+    bodyHTML += `<div class="section-title" style="margin-top:8px">▼ РАСХОДЫ И ПЛАТЕЖИ</div>`;
+    w.outflows.forEach(it => {
+      bodyHTML += `<div class="flow-row">
+        <div class="flow-label"><em>${it.label}</em>${it.note ? `<small>${it.note}</small>` : ''}</div>
+        <div class="flow-amount ${it.cls}">−${fmt(it.amount)}</div>
+      </div>`;
+    });
+  }
+
+  // Balance box
+  const totalIn = (w.income||[]).reduce((s,x)=>s+(x.amount||0),0);
+  const totalOut = (w.outflows||[]).reduce((s,x)=>s+(x.amount||0),0);
+  bodyHTML += `<div class="balance-box">
+    <div><div class="lbl">Начало</div><div style="font-size:0.68rem;color:var(--ivory-dim)">${fmt(w.openingBalance)}</div></div>
+    <div style="text-align:center;font-size:0.58rem;color:var(--gold-dim)">+${Math.round(totalIn/1000)}к / −${Math.round(totalOut/1000)}к</div>
+    <div style="text-align:right"><div class="lbl">Конец</div><div class="val">${fmt(w.closingBalance)}</div></div>
+  </div>`;
+
+  // Alert
+  if (w.alert) bodyHTML += `<div class="alert-box">${w.alert}</div>`;
+
+  // Tip
+  if (w.tip) bodyHTML += `<div class="tip-box"><strong>💡</strong> ${w.tip}</div>`;
+
+  // Book
+  if (w.book) bodyHTML += `<div class="book-rec"><span class="book-title">📖 ${w.book.title}</span><div class="book-lesson">${w.book.lesson}</div></div>`;
+
+  // Tasks
+  if (w.tasks && w.tasks.length) {
+    bodyHTML += `<div class="tasks-section"><div class="section-title">✓ ДЕЙСТВИЯ</div>`;
+    w.tasks.forEach((t, ti) => {
+      const tid = `t_${wi}_${ti}`;
+      const done = STATE.tasks && STATE.tasks[tid];
+      bodyHTML += `<div class="check-row ${done?'done':''}" id="cr_${tid}" onclick="toggleTask('${tid}',${wi},${ti})">
+        <input type="checkbox" id="${tid}" ${done?'checked':''} onclick="event.stopPropagation();toggleTask('${tid}',${wi},${ti})">
+        <span>${t.text}</span>
+        ${t.amount ? `<span class="task-amount">${fmt(t.amount)}</span>` : ''}
+      </div>`;
+    });
+    bodyHTML += `</div>`;
+  }
+
+  // Deposit action
+  if (w.deposit) {
+    const depDone = STATE.deposits && STATE.deposits.find(d => d.weekNum === w.num);
+    const depId = 'dep_' + w.num;
+    bodyHTML += `<div class="deposit-inp-row" id="deprow_${w.num}">
+      <div class="deposit-inp-label">🪙 ${w.deposit.label}<br><span style="font-size:0.58rem;opacity:0.7">${w.deposit.note}</span></div>
+      ${depDone
+        ? `<button class="deposit-btn done">✓ ${fmt(depDone.amount)}</button>`
+        : `<input class="deposit-inp" id="${depId}" type="number" value="${w.deposit.suggested}" min="1000" step="1000">
+           <button class="deposit-btn" onclick="addDeposit(${w.num},'${depId}')">Внести</button>`
+      }
+    </div>`;
+  }
+
+  card.innerHTML = `
+    <div class="week-header" onclick="toggleWeek(${w.num})">
+      <div class="week-num">НЕД ${w.num}</div>
+      <div class="week-dates">${w.dates}</div>
+      <div class="week-balance ${bcls(w.closingBalance)}">${fmt(w.closingBalance)}</div>
+      <div class="week-chevron">▼</div>
+    </div>
+    <div class="week-body">${bodyHTML}</div>
+  `;
+  container.appendChild(card);
+});
+
+// ============================================================
+// INTERACTIONS
+// ============================================================
+function toggleWeek(num) {
+  document.getElementById('week-'+num).classList.toggle('open');
+}
+
+function toggleTask(tid, wi, ti) {
+  if (!STATE.tasks) STATE.tasks = {};
+  const cb = document.getElementById(tid);
+  const row = document.getElementById('cr_'+tid);
+  if (!cb || !row) return;
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    STATE.tasks[tid] = 1;
+    row.classList.add('done');
+    // If task has a debtKey, register payment
+    const w = WEEKS[wi];
+    const task = w.tasks[ti];
+    if (task && task.amount && task.debtKey) {
+      if (!STATE.paid) STATE.paid = [];
+      if (!STATE.paid.find(p => p.key === task.debtKey)) {
+        STATE.paid.push({ key: task.debtKey, amount: task.amount });
+      }
+    }
+  } else {
+    delete STATE.tasks[tid];
+    row.classList.remove('done');
+    const w = WEEKS[wi];
+    const task = w.tasks[ti];
+    if (task && task.debtKey && STATE.paid) {
+      STATE.paid = STATE.paid.filter(p => p.key !== task.debtKey);
+    }
+  }
+  saveState(STATE);
+  updateHeader();
+}
+
+function addDeposit(weekNum, inputId) {
+  const inp = document.getElementById(inputId);
+  const amount = parseInt(inp.value) || 0;
+  if (amount <= 0) return;
+  if (!STATE.deposits) STATE.deposits = [];
+  if (STATE.deposits.find(d => d.weekNum === weekNum)) return;
+  STATE.deposits.push({ weekNum, amount });
+  saveState(STATE);
+  updateHeader();
+  // Update UI
+  const row = document.getElementById('deprow_' + weekNum);
+  if (row) {
+    row.querySelector('.deposit-btn').textContent = '✓ ' + fmt(amount);
+    row.querySelector('.deposit-btn').classList.add('done');
+    inp.style.display = 'none';
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const map = { plan:'tab-plan', debts:'tab-debts', principles:'tab-principles' };
+  document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById(map[name]).classList.add('active');
+}
+
+// Init
+updateHeader();
+setTimeout(() => {
+  const cur = document.querySelector('.current-week');
+  if (cur) { cur.classList.add('open'); cur.scrollIntoView({behavior:'smooth',block:'center'}); }
+}, 200);
+</script>
+</body>
+</html>
